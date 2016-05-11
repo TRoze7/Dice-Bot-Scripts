@@ -1,0 +1,12 @@
+minbet=0.00000001 --the minimum Amount you want to bet
+maxbet=0.0020000 -- the maximum amount you want to bet
+
+nextbet=0.000001 -- The first bet you want to make
+
+chance = 49.5 -- use this to set the chance you want to bet at
+
+function dobet ()
+
+nextbet= math.random(minbet*100000000,maxbet*100000000)/100000000.0
+
+end

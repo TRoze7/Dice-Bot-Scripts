@@ -1,0 +1,92 @@
+chance = 39.6
+martimulti = 1.85 --multiplier for loses
+streak = 20       -- cover 20 bets
+risk = (martimulti ^ streak) * (streak/(streak *(martimulti - 1)))
+
+boomstreak = 13   -- cover 13 bets on a Boom
+boomrisk = (martimulti ^ boomstreak) * (boomstreak/(boomstreak *(martimulti - 1)))
+
+
+startbalance = balance
+nextbet = balance / risk
+basebet = balance / risk
+
+stoponprofit = true  -- stop when you reach profitstop
+profitstop = 3
+
+savefactor = 1.5     -- save factor from starting balance
+target = .01         -- Amount to incrementally save  
+targetbalance = balance + target
+bethigh = true
+low = 0
+high = 0
+losecount = 0
+stopnow = false
+boom = false
+totallose = 0
+wincount = 0
+nextwinbet = basebet * martimulti
+
+
+function dobet()
+
+
+if (win) then
+   wincount += 1
+   totallose = 0 
+   newbalance = balance
+   nextbet = balance / risk
+    base = true 
+   if (stopnow) then stop() end
+   if (stoponprofit and profit > profitstop) then stop() end
+   if (wincount > 2 ) then 
+     nextbet = previousbet + ((lastBet.profit  - previousbet)/2)
+     base = false
+   else
+       if(math.random(1,5) == 4) then 
+           nextbet = balance / boomrisk
+           print("BOOM")
+            boom = true
+        else
+             boom = false
+        end 
+     end
+       losecount = 0
+      if (balance > targetbalance) then 
+         invest((balance - targetbalance)+target)
+         targetbalance = targetbalance + target
+         newbalance = targetbalance
+      end
+      if (newbalance > startbalance * savefactor) then 
+          invest(balance-startbalance)
+          targetbalance = startbalance + target
+          startbalance = startbalance * savefactor
+      end
+  else
+      if (losecount == 0 and !base) then
+          nextbet = balance / risk
+          base = true
+           boom = false
+      else 
+          nextbet = previousbet * martimulti
+          base = false
+       end
+      losecount += 1
+      print(losecount)
+     if (losecount == 15 or (losecount == 10 and boom)) then
+       repeat
+              io.write("high or low (h/l)? ")
+              io.flush()
+              answer=io.read()
+        until answer=="h" or answer=="l"
+        if (answer == "h") then 
+           bethigh = true
+        else 
+            bethigh = false
+        end
+      end 
+   if ((math.random() < .1) and (losecount < 15)) then bethigh = !bethigh end   
+   wincount = 0
+ end
+  
+end

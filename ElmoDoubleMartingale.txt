@@ -1,0 +1,70 @@
+--Set Profit Target BTC (Current Balance + Profit)
+target=999.0000000 --BTC
+
+--Basebet
+base=0.00000001
+
+--Seed Reset
+resetvalue=100
+
+winchance= 33.0
+multiplier=2.1
+
+losscount=0
+nextbet=base
+wintotal=0
+
+function dobet()
+
+if resetvalue == 100 then
+resetvalue=0
+resetseed();
+print("Current Profit at Seed Reset")
+print(string.format("%.8f", wintotal))
+else
+resetvalue=resetvalue+1
+wintotal=wintotal+currentprofit
+end
+
+if (balance) >= target then
+print("Current Profit")
+print(string.format("%.8f", wintotal))
+print(balance)
+print("TARGET ACHIEVED!!!")
+stop();
+end
+
+if (balance) < (nextbet) then
+stop();
+print("Insufficient Balance")
+end
+
+if losscount==14 then
+   chance=49.5
+   nextbet= previousbet*1.3
+end
+
+--Randomizer
+r=math.random(10)
+
+if r >= 5 then
+     bethigh=true
+else
+     bethigh=false
+end
+
+if win then
+      nextbet=base
+      losscount=0
+      chance=winchance
+else 
+     if losscount < 2 then
+     nextbet = base
+     else
+     nextbet = previousbet * multiplier
+     end
+     losscount=losscount+1
+end
+
+end
+

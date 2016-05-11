@@ -1,0 +1,122 @@
+chance= 47.13
+base=0.00000001
+bethigh = true
+
+nextbet = base  
+investprofit = 0
+wincount = 0
+losecount=0
+stopnow = false
+first = true
+second = false
+secondwin = false
+third = false
+betcount=100
+
+-- set profit target here (Final Balance after Winning)
+profittarget= 999.00000000
+
+function dobet()
+
+--Randomizer
+r=math.random(2)
+
+if r == 1 then
+     bethigh=true
+else
+     bethigh=false
+end
+
+if betcount == 100 then
+betcount=0
+resetseed();
+else
+betcount=betcount+1
+end
+
+if (balance) >= profittarget then
+stop();
+print(balance)
+print("TARGET ACHIEVED!!!")
+end
+
+if (balance) < (nextbet) then
+stop();
+print(balance)
+print("INSUFFICIENT FUNDS")
+end
+
+done = false
+
+   if win then
+
+--     switch high/low every win
+--     bethigh = false
+
+         if(first) then
+--          switch high/low on the first win
+--          bethigh = !bethigh
+            nextbet = base
+            if(stopnow) then stop() end
+         end 
+         if(second) then
+--          switch high/low on the second win
+--          bethigh = !bethigh
+            secondwin = true
+            second = false
+            third = true
+            done = true 
+         end
+         if(third and !done) then
+--          switch high/low on the third win
+--          bethigh = !bethigh
+            if(secondwin) then
+--             switch high/low on the second and third win
+--             bethigh = !bethigh   
+               nextbet = base
+               if(stopnow) then stop() end
+            else
+--              switch high/low on one and two lose third win
+--              bethigh = !bethigh                
+                nextbet = previousbet * 3
+             end
+             third = false
+             first = true
+         end 
+   else
+--    switch high/low on the every lose
+--    bethigh = true
+      if(first and !done) then
+--        switch high/low on the first lose
+--        bethigh = !bethigh
+          first = false
+          second = true
+          done = true
+       end
+       if(second and !done) then
+--         switch high/low on the second lose
+--         bethigh = !bethigh
+           secondwin = false
+           second = false
+           third = true
+           done = true
+        end
+        if(third and !done) then
+--          switch high/low on the third lose
+--          bethigh = !bethigh
+            third = false
+            first = true
+            print("GO 4 THE WIN!!!")
+            if (secondwin) then 
+--              switch high/low on the one lose two in thrird lose
+--              bethigh = !bethigh
+                nextbet = previousbet * 3
+            else
+--              switch high/low only if all three lose
+--              bethigh = !bethigh
+                nextbet = previousbet * 4
+             end
+            done = true
+        end  
+   end
+end 
